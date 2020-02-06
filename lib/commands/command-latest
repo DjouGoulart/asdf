@@ -1,6 +1,6 @@
 # -*- sh -*-
 
-latest_command() {
+default_latest_command() {
   DEFAULT_QUERY="[0-9]"
 
   local plugin_name=$1
@@ -14,6 +14,20 @@ latest_command() {
     sed 's/^\s\+//' |
     sort --version-sort |
     tail -1
+}
+
+latest_command() {
+  local plugin_name=$1
+  local query=$2
+
+  check_if_plugin_exists "$plugin_name"
+  local plugin_path=$(get_plugin_path "$plugin_name")
+
+  if [ -f "${plugin_path}/bin/latest" ]; then
+     bash "${plugin_path}"/bin/latest "${query}"
+  else
+     default_latest_command "$plugin_name" "$query"
+  fi
 }
 
 latest_command "$@"
